@@ -202,7 +202,7 @@ def parse_image_info(image_info_file):
         #print(f"Error processing file: {e}")
         return []
 ########################################################
-def find_intersections2(points, rays,ab):
+def find_intersections(points, rays,ab,V):
     intersectionss = []
     num_points = len(points)
 

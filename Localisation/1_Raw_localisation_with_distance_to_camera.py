@@ -23,7 +23,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
         print(str(u[j+3]))
         l=[str(u[j]) ,str(u[j+1]),str(u[j+2]),str(u[j+3])]
        
-
+        V_total=[]
         ab_total=[]
         GCP_total=[]
         G_total=[]
@@ -40,6 +40,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
             ab=[]
             GCP=[]
             G=[]
+            V=[]
             if target_entry:
                 for j in range(len(data_xy)):
                     lon = target_entry['imj_lon']  # Assuming width is pitch for this example
@@ -56,12 +57,13 @@ def XYlocation(camera_info_file,directory_path,file_path):
                     ab.append(Par_droit)
                     G.append(gisement)
                     C_total[i]=Camera_Coordinate_Lambert_72
+                    V.append(angle_vertical)
                     # Calculate intersections    
             else:
                 print(f"Filename  not found in the data.")
         
             print("__________________________getting info about point_",i,"_______________________________________")
-            
+            V_total.append(V)
             ab_total.append(ab)
             GCP_total.append(GCP)
             G_total.append(G)
