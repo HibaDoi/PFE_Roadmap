@@ -105,18 +105,6 @@ def ObjectCoordinat(Camera_Orientation,Camera_Coordinate_WGS,P):
     Par_droit=droit(Camera_Coordinate_Lambert_72,(100-gisement)*pi/200)
     return gisement,angle_verticale,Camera_Coordinate_Lambert_72,Par_droit
 ####################################################################
-def find_intersections(lines):
-    intersections = []
-    n = len(lines)
-    
-    for i in range(n):
-        for j in range(i + 1, n):
-            a1, b1 = lines[i]
-            a2, b2 = lines[j]
-            intersections.append(intersection(a1,b1,a2,b2))
-    
-    return intersections
-####################################################################
 def parse_image_info(image_info_file):
     try:
         parsed_data = []
@@ -216,7 +204,7 @@ def find_intersections(points, rays,ab,V):
                     intersection = intersection_of_half_lines(points[i][:2],points[j][:2], ab[i][n], ab[j][m], rays[i][n], rays[j][m])
                     if intersection:
                         o+=1
-                        intersectionss.append([intersection, (i, rays[i][n],n),(j, rays[j][m],m)])
+                        intersectionss.append([intersection, (i, rays[i][n],n),(j, rays[j][m],m),V[i][n],V[j][m]])
 
                             
 
@@ -309,12 +297,12 @@ def appartient_a_la_demi_droite(x1, y1, xB, yB, azimuth_grades):
 def Total_cluster(input_CSV,output_CSV):
     df = pd.read_csv(input_CSV)
     # Arrondir les colonnes 'x' et 'y' à quatre chiffres après la virgule
-    df['centroid_xf'] = df['centroid_xf'].round(4)
-    df['centroid_yf'] = df['centroid_yf'].round(4)
+    df['x'] = df['x'].round(5)
+    df['y'] = df['y'].round(5)
     # Supprimer les doublons
-    df = df.drop_duplicates(subset=['centroid_xf', 'centroid_yf'])
+    df = df.drop_duplicates(subset=['x', 'y'])
     # Apply DBSCAN
-    clustering = DBSCAN(eps=0.5, min_samples=3).fit(df[['centroid_xf', 'centroid_yf']])
+    clustering = DBSCAN(eps=0.5, min_samples=3).fit(df[['x', 'y']])
     df['cluster'] = clustering.labels_
     # Remove rows where cluster label is -1 (noise)
     df = df[df['cluster'] != -1]
@@ -331,7 +319,8 @@ def Total_cluster(input_CSV,output_CSV):
 def calculate_distance(x1, y1, x2, y2):
     return np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
-
+def calculate_Z(d,v,z):
+    return z-d*tan(v*pi/200)
 
 
 

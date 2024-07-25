@@ -67,9 +67,8 @@ def XYlocation(camera_info_file,directory_path,file_path):
             ab_total.append(ab)
             GCP_total.append(GCP)
             G_total.append(G)
-        x_values = [coord[0] for coord in C_total]
-        y_values = [coord[1] for coord in C_total]
-        uu=find_intersections2(C_total, G_total,ab_total)
+
+        uu=find_intersections(C_total, G_total,ab_total,V_total)
         ff=[]
         for i in range(len(uu)):
             ff.append(uu[i][0])
@@ -81,7 +80,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
             print('0')
             continue
         else:
-            clustering = DBSCAN(eps=1, min_samples=2).fit(ff)
+            clustering = DBSCAN(eps=0.5, min_samples=2).fit(ff)
             df['cluster'] = clustering.labels_
 
         
@@ -92,21 +91,21 @@ def XYlocation(camera_info_file,directory_path,file_path):
         df['y'] = [uu[i][0][1] for i in range(len(uu))]
         df['camera1'] = [uu[i][1][0] for i in range(len(uu))]
         df['lob1'] = [uu[i][1][2] for i in range(len(uu))]
+        df['V1'] = [uu[i][3] for i in range(len(uu))]
         df['camera2'] = [uu[i][2][0] for i in range(len(uu))]
         df['lob2'] = [uu[i][2][2] for i in range(len(uu))]
+        df['V2'] = [uu[i][4] for i in range(len(uu))]
         df['xcamera1coo'] = [C_total[uu[i][1][0]][0] for i in range(len(uu))]
         df['ycamera1coo'] = [C_total[uu[i][1][0]][1] for i in range(len(uu))]
+        df['zcamera1coo'] = [C_total[uu[i][1][0]][2] for i in range(len(uu))]
         df['xcamera2coo'] = [C_total[uu[i][2][0]][0] for i in range(len(uu))]
         df['ycamera2coo'] = [C_total[uu[i][2][0]][1] for i in range(len(uu))]
+        df['zcamera2coo'] = [C_total[uu[i][2][0]][2] for i in range(len(uu))]
         df_filtered = df[df['cluster'] != -1]
         if not df_filtered.empty :
             # Affichage du DataFrame filtré
             gg=df_filtered.sort_values(by='cluster')
             gg=gg.reset_index(drop=True)
-            print(gg)
-            #input()
-
-        
             # Calcul des centroïdes
             centroid_df = gg.groupby('cluster').agg({'x': 'mean', 'y': 'mean'}).reset_index()
             centroid_df.columns = ['cluster', 'centroid_x', 'centroid_y']
@@ -115,15 +114,14 @@ def XYlocation(camera_info_file,directory_path,file_path):
             gg = gg.merge(centroid_df, on='cluster', how='left')
             # Calculer la distance de chaque point à son centroïde
             gg['distance_to_centroid'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['centroid_x'], row['centroid_y']), axis=1)
-            print(gg)
-            #input()
-
             gg['distance_to_camera1'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['xcamera1coo'], row['ycamera1coo']), axis=1)
             gg['distance_to_camera2'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['xcamera2coo'], row['ycamera2coo']), axis=1)
+            gg['Z1'] = gg.apply(lambda row: calculate_Z(row['distance_to_camera1'], row['V1'], row['zcamera1coo']), axis=1)
+            gg['Z2'] = gg.apply(lambda row: calculate_Z(row['distance_to_camera2'], row['V2'], row['zcamera2coo']), axis=1)
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
+            
             print(gg)
-            #input()
-
+           
 
             # Sélectionner toutes les lignes mais uniquement certaines colonnes
             ggn = gg.loc[:, ['cluster','camera1','lob1','distance_to_camera1', 'camera2','lob2','distance_to_camera2']]
@@ -213,26 +211,20 @@ def XYlocation(camera_info_file,directory_path,file_path):
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
             print(gg)
             #input("__________________88888888888888888888888888888888____________________")
-            ggg = gg.loc[:, ['cluster', 'centroid_xf', 'centroid_yf','distance_to_centroidf','distance_to_camera1','distance_to_camera2']]
-
+            ggg = gg.loc[:, ['cluster', 'x', 'y','distance_to_centroidf','distance_to_camera1','distance_to_camera2',"Z1","Z2"]]
             # Group by 'cluster', 'centroid_x', 'centroid_y', then calculate the mean of 'distance_to_centroid'
-            grouped_df = ggg.groupby(['cluster', 'centroid_xf', 'centroid_yf']).agg(
-                mean_distance_to_centroid=('distance_to_centroidf', 'mean'),
-                mean_camera_distance1=('distance_to_camera1', 'mean') ,
-                mean_camera_distance2=('distance_to_camera2', 'mean')
-            ).reset_index()
-
+            grouped_df = ggg
             # Print the resulting DataFrame
             print(grouped_df)
 
             #input("__________________88888888111111111111111118888888____________________")
-            grouped_df['mean_camera_distance'] = grouped_df[['mean_camera_distance1', 'mean_camera_distance2']].mean(axis=1)
+            grouped_df['mean_camera_distance'] = grouped_df[['distance_to_camera1', 'distance_to_camera2']].mean(axis=1)
 
             # Drop the old camera distance columns if they are no longer needed
-            grouped_df = grouped_df.drop(['mean_camera_distance1', 'mean_camera_distance2'], axis=1)
+            #grouped_df = grouped_df.drop(['mean_camera_distance1', 'mean_camera_distance2'], axis=1)
 
             print(grouped_df)
-
+            
             # Specify the file path (change this path as needed for your environment)
             
 
