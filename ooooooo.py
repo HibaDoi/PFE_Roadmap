@@ -5,6 +5,8 @@ df = pd.read_csv("sanity.csv")
 print(df)
 
 
+
+
 # Use melt to reshape the DataFrame, repeating 'cluster' for each value
 result_df = df.melt(id_vars=['cluster'], value_vars=['Z1', 'Z2'])
 
