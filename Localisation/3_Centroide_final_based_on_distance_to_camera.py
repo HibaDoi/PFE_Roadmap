@@ -46,17 +46,32 @@ def more_filtering(input,output,output_shp,max_dist):
     valid_clusters1 = removal_counts1[removal_counts1 < cluster_counts].index
     # Only apply the filter where the number of removals is less than the total points in the cluster
     filtered_filtered_df2 = filtered_df[(~filtered_df['cluster'].isin(valid_clusters1) | ~filtered_df['remove'])]
-    print( filtered_filtered_df2[['cluster',"Z1","Z2"]])
+    Zdf=filtered_filtered_df2[['cluster',"Z1","Z2"]]
     filtered_filtered_df2[['cluster',"Z1","Z2"]].to_csv("sanity.csv", index=False)
-    #############################################################################################################################################
+    #######################################################################################################
+    #iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+    result_df = Zdf.melt(id_vars=['cluster'], value_vars=['Z1', 'Z2'])
+    clusters = result_df['cluster'].unique()  # Get unique clusters
+    Z=[]
+    for cluster in clusters:
+        Z_clustred=result_df[result_df['cluster'] == cluster]
+        dbscan = DBSCAN(eps=0.1, min_samples=2)
+        Z_clustred['clusterZZt'] = dbscan.fit_predict(Z_clustred[['value']])
+        Z_clustred = Z_clustred[Z_clustred['clusterZZt'] != -1]
+        cluster_counts = Z_clustred['clusterZZt'].value_counts()
+        most_frequent_cluster = cluster_counts.idxmax()
+        Z_filtred = Z_clustred[Z_clustred['clusterZZt'] == most_frequent_cluster]
+        Z_filtred=Z_filtred[['value']].mean().reset_index()
+        Z.append(Z_filtred.values.tolist()[0][1])
+    #iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+    #####################################################################################################
     filtered_filtered_df23 = filtered_filtered_df2.groupby(['cluster']).agg(
                     mean_distance_to_centroid=('new_distance_to_centroid', 'mean'),
                     new_centroid_x=('x', 'mean'),  # Replace 'centroid_xf' with your x-coordinate column
                     new_centroid_y=('y', 'mean'),   # Replace 'centroid_yf' with your y-coordinate column
                     mean_distance_to_camera=('mean_camera_distance', 'mean'),
                 ).reset_index()
-    # print(filtered_filtered_df23)
-    # filtered_filtered_df23.to_csv('4_Localisation/new_18_07a.csv', index=False)
+    filtered_filtered_df23['Z_final']=Z
     ################################################################################################################"
     # # Arrondir les colonnes 'x' et 'y' à quatre chiffres après la virgule
     filtered_filtered_df23['new_centroid_x'] = filtered_filtered_df23['new_centroid_x'].round(4)

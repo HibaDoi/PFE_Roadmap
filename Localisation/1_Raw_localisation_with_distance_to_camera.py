@@ -7,22 +7,13 @@ camera_info_file="Localisation/Camera_parameter.txt"
 #this should contain .json 
 directory_path = 'Json+mask'
 file_path = 'Localisation\csv_file\_1_raw_points_from_localisation.csv'
-
 def XYlocation(camera_info_file,directory_path,file_path):
-    print("..................")
     u=traverse_directory_in_groups(directory_path)
-    
     camera_info=parse_image_info(camera_info_file)
-    
-    harimna=[]
     for j in range(len(u)-4) :
         print("________________________________Premier 4 points__________________________________________")
         print(str(u[j]))
-        print(str(u[j+1]))
-        print(str(u[j+2]))
-        print(str(u[j+3]))
         l=[str(u[j]) ,str(u[j+1]),str(u[j+2]),str(u[j+3])]
-       
         V_total=[]
         ab_total=[]
         GCP_total=[]
@@ -61,8 +52,6 @@ def XYlocation(camera_info_file,directory_path,file_path):
                     # Calculate intersections    
             else:
                 print(f"Filename  not found in the data.")
-        
-            print("__________________________getting info about point_",i,"_______________________________________")
             V_total.append(V)
             ab_total.append(ab)
             GCP_total.append(GCP)
@@ -82,11 +71,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
         else:
             clustering = DBSCAN(eps=0.5, min_samples=2).fit(ff)
             df['cluster'] = clustering.labels_
-
-        
-        
         # Ajout de colonnes
-        
         df['x'] = [uu[i][0][0] for i in range(len(uu))]
         df['y'] = [uu[i][0][1] for i in range(len(uu))]
         df['camera1'] = [uu[i][1][0] for i in range(len(uu))]
@@ -119,115 +104,58 @@ def XYlocation(camera_info_file,directory_path,file_path):
             gg['Z1'] = gg.apply(lambda row: calculate_Z(row['distance_to_camera1'], row['V1'], row['zcamera1coo']), axis=1)
             gg['Z2'] = gg.apply(lambda row: calculate_Z(row['distance_to_camera2'], row['V2'], row['zcamera2coo']), axis=1)
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
-            
-            print(gg)
-           
-
             # Sélectionner toutes les lignes mais uniquement certaines colonnes
             ggn = gg.loc[:, ['cluster','camera1','lob1','distance_to_camera1', 'camera2','lob2','distance_to_camera2']]
-
-            print(ggn)
-            #input()
-
             gga=gg.loc[:, ['cluster','camera1','lob1','distance_to_camera1']]
             print(gga)
             ggb=gg.loc[:, ['cluster','camera2','lob2','distance_to_camera2']]
             print(ggb)
-            #input()
             gga.columns = ['cluster', 'camera', 'lob', 'distance_to_camera']
             ggb.columns = ['cluster', 'camera', 'lob', 'distance_to_camera']
             result = pd.concat([gga, ggb])
-
             # Trier le DataFrame final par cluster puis réinitialiser l'index pour nettoyer l'affichage
             result_sorted = result.sort_values(by=['cluster', 'camera', 'lob']).reset_index(drop=True)
-
             # Affichage du DataFrame final
-            print(result_sorted)
-            #input("____________________________")
-
             # Group by 'cluster', 'camera', and 'lob', then calculate the mean distance
             result1 = result_sorted.groupby(['cluster', 'camera', 'lob']).agg(mean_distance=('distance_to_camera', 'mean')).reset_index()
-
             # Display the resulting DataFrame
-            print(result1)
-            #input(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
             # Sort by 'camera', 'lob', and 'mean_distance' (ascending)
             sorted_df = result1.sort_values(by=['camera', 'lob', 'mean_distance'], ascending=[True, True,   False])
-            print(sorted_df)
-            #input('______________lets see___________________')
             # Drop duplicates while keeping the entry with the lowest distance for each 'camera-lob' combination
             final_df = sorted_df.drop_duplicates(subset=['camera', 'lob'], keep='first')
-            print(final_df)
             final_df =final_df.sort_values(by=['cluster', 'camera', 'lob'])
-
             # Display the resulting DataFrame
-            print(final_df)
-            #input('ooooooooooooooooooooooooooo')
             # Finding unique clusters in df1
             unique_clusters_df11 = final_df['cluster'].unique()
-            print(unique_clusters_df11)
             # Filter df2 to only include rows with clusters that are unique in df1
             gg = gg[gg['cluster'].isin(unique_clusters_df11)]
-
-            print(gg)
-            #input("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
             # (1) Find clusters in table2 with only one entry
             single_entry_clusters = gg['cluster'].value_counts()[final_df['cluster'].value_counts() == 1].index
             gg = gg[~gg['cluster'].isin(single_entry_clusters)]
-            print(gg)
-            print(single_entry_clusters)
-            #input("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
             valid_combinations = final_df.groupby('cluster').apply(lambda df: set(zip(df['camera'], df['lob']))).to_dict()
-            print(valid_combinations)
-            #input('jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj')
             gg = gg[
-            gg.apply(lambda row: (row['camera1'], row['lob1']) in valid_combinations.get(row['cluster'], set()) and
-                                    (row['camera2'], row['lob2']) in valid_combinations.get(row['cluster'], set()), axis=1)
-        ]
-            print(gg)
-            #input('blablablablabala')
+            gg.apply(lambda row: (row['camera1'], row['lob1']) in valid_combinations.get(row['cluster'], set()) and (row['camera2'], row['lob2']) in valid_combinations.get(row['cluster'], set()), axis=1)]
             # (1) Count entries in each cluster within table1
             cluster_counts = gg['cluster'].value_counts()
-
             # Identify clusters with only one entry
             clusters_with_single_entry = cluster_counts[cluster_counts == 1].index
-
             # Drop rows from table1 where cluster has only one entry
             gg = gg[~gg['cluster'].isin(clusters_with_single_entry)]
-            print(gg)
-            #input("##########################")
-
-
             # Calcul des centroïdes
             centroid_df = gg.groupby('cluster').agg({'x': 'mean', 'y': 'mean'}).reset_index()
             centroid_df.columns = ['cluster', 'centroid_xf', 'centroid_yf']
-
             # Ajouter les centroïdes au DataFrame original
             gg = gg.merge(centroid_df, on='cluster', how='left')
-            print(gg)
-            #input()
             # Calculer la distance de chaque point à son centroïde
             gg['distance_to_centroidf'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['centroid_xf'], row['centroid_yf']), axis=1)
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
-            print(gg)
-            #input("__________________88888888888888888888888888888888____________________")
             ggg = gg.loc[:, ['cluster', 'x', 'y','distance_to_centroidf','distance_to_camera1','distance_to_camera2',"Z1","Z2"]]
             # Group by 'cluster', 'centroid_x', 'centroid_y', then calculate the mean of 'distance_to_centroid'
             grouped_df = ggg
             # Print the resulting DataFrame
-            print(grouped_df)
-
-            #input("__________________88888888111111111111111118888888____________________")
             grouped_df['mean_camera_distance'] = grouped_df[['distance_to_camera1', 'distance_to_camera2']].mean(axis=1)
-
             # Drop the old camera distance columns if they are no longer needed
             #grouped_df = grouped_df.drop(['mean_camera_distance1', 'mean_camera_distance2'], axis=1)
-
-            print(grouped_df)
-            
-            # Specify the file path (change this path as needed for your environment)
-            
-
             # Check if the file exists. If it does, append without headers. If not, write with headers.
             try:
                 # Attempt to read the file to check if it exists
