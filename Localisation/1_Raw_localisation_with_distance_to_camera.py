@@ -5,8 +5,8 @@ import pandas as pd
 
 camera_info_file="Localisation/Camera_parameter.txt"
 #this should contain .json 
-directory_path = 'Json+mask'
-file_path = 'Localisation\csv_file\_1_raw_points_from_localisation.csv'
+directory_path = 'Sam/json'
+file_path = 'Localisation\csv_file\_1_raw_points_from_localisation_H.csv'
 def XYlocation(camera_info_file,directory_path,file_path):
     u=traverse_directory_in_groups(directory_path)
     camera_info=parse_image_info(camera_info_file)
@@ -15,6 +15,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
         print(str(u[j]))
         l=[str(u[j]) ,str(u[j+1]),str(u[j+2]),str(u[j+3])]
         V_total=[]
+        V_total2=[]
         ab_total=[]
         GCP_total=[]
         G_total=[]
@@ -32,6 +33,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
             GCP=[]
             G=[]
             V=[]
+            V2=[]
             if target_entry:
                 for j in range(len(data_xy)):
                     lon = target_entry['imj_lon']  # Assuming width is pitch for this example
@@ -42,22 +44,27 @@ def XYlocation(camera_info_file,directory_path,file_path):
                     yaw = target_entry['imj_yaw']  # Assuming height is yaw for this example
                     x=data_xy[j]["xy"][0]
                     y=data_xy[j]["xy"][1]
-                    ii=[lon,lat,height,roll,pitch,yaw ,x,y]
+                    xt=data_xy[j]["xyt"][0]
+                    yt=data_xy[j]["xyt"][1]
+                    ii=[lon,lat,height,roll,pitch,yaw ,x,y,xt,yt]
                     gisement,angle_vertical,Camera_Coordinate_Lambert_72,Par_droit=ObjectCoordinat(ii[3:6],ii[0:3],(ii[6], ii[7]))
+                    _,angle_vertical2,_,_=ObjectCoordinat(ii[3:6],ii[0:3],(ii[8], ii[9]))
                     GCP.append([gisement,Camera_Coordinate_Lambert_72,Par_droit])
                     ab.append(Par_droit)
                     G.append(gisement)
                     C_total[i]=Camera_Coordinate_Lambert_72
                     V.append(angle_vertical)
+                    V2.append(angle_vertical2)
                     # Calculate intersections    
             else:
                 print(f"Filename  not found in the data.")
             V_total.append(V)
+            V_total2.append(V2)
             ab_total.append(ab)
             GCP_total.append(GCP)
             G_total.append(G)
 
-        uu=find_intersections(C_total, G_total,ab_total,V_total)
+        uu=find_intersections(C_total, G_total,ab_total,V_total,V_total2)
         ff=[]
         for i in range(len(uu)):
             ff.append(uu[i][0])
@@ -77,9 +84,11 @@ def XYlocation(camera_info_file,directory_path,file_path):
         df['camera1'] = [uu[i][1][0] for i in range(len(uu))]
         df['lob1'] = [uu[i][1][2] for i in range(len(uu))]
         df['V1'] = [uu[i][3] for i in range(len(uu))]
+        df['V1_'] = [uu[i][5] for i in range(len(uu))]
         df['camera2'] = [uu[i][2][0] for i in range(len(uu))]
         df['lob2'] = [uu[i][2][2] for i in range(len(uu))]
         df['V2'] = [uu[i][4] for i in range(len(uu))]
+        df['V2_'] = [uu[i][6] for i in range(len(uu))]
         df['xcamera1coo'] = [C_total[uu[i][1][0]][0] for i in range(len(uu))]
         df['ycamera1coo'] = [C_total[uu[i][1][0]][1] for i in range(len(uu))]
         df['zcamera1coo'] = [C_total[uu[i][1][0]][2] for i in range(len(uu))]
@@ -103,6 +112,8 @@ def XYlocation(camera_info_file,directory_path,file_path):
             gg['distance_to_camera2'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['xcamera2coo'], row['ycamera2coo']), axis=1)
             gg['Z1'] = gg.apply(lambda row: calculate_Z(row['distance_to_camera1'], row['V1'], row['zcamera1coo']), axis=1)
             gg['Z2'] = gg.apply(lambda row: calculate_Z(row['distance_to_camera2'], row['V2'], row['zcamera2coo']), axis=1)
+            gg['H1'] = gg.apply(lambda row: calculate_H(row['distance_to_camera1'], row['V1']-row['V1_']), axis=1)
+            gg['H2'] = gg.apply(lambda row: calculate_H(row['distance_to_camera2'], row['V2']-row['V2_']), axis=1)
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
             # Sélectionner toutes les lignes mais uniquement certaines colonnes
             ggn = gg.loc[:, ['cluster','camera1','lob1','distance_to_camera1', 'camera2','lob2','distance_to_camera2']]
@@ -149,14 +160,18 @@ def XYlocation(camera_info_file,directory_path,file_path):
             # Calculer la distance de chaque point à son centroïde
             gg['distance_to_centroidf'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['centroid_xf'], row['centroid_yf']), axis=1)
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
-            ggg = gg.loc[:, ['cluster', 'centroid_xf', 'centroid_yf','distance_to_centroidf','distance_to_camera1','distance_to_camera2',"Z1","Z2"]]
+            print(gg)
+            print("###########################################")
+            ggg = gg.loc[:, ['cluster', 'centroid_xf', 'centroid_yf','distance_to_centroidf','distance_to_camera1','distance_to_camera2',"Z1","Z2","H1","H2"]]
             # Group by 'cluster', 'centroid_x', 'centroid_y', then calculate the mean of 'distance_to_centroid'
             grouped_df = ggg.groupby(['cluster', 'centroid_xf', 'centroid_yf']).agg(
                 mean_distance_to_centroid=('distance_to_centroidf', 'mean'),
                 mean_camera_distance1=('distance_to_camera1', 'mean') ,
                 mean_camera_distance2=('distance_to_camera2', 'mean'),
                 Z1=("Z1", 'mean') ,
-                Z2=("Z2", 'mean')
+                Z2=("Z2", 'mean'),
+                H1=("H1", 'mean') ,
+                H2=("H2", 'mean'),
             ).reset_index()
 
             # Print the resulting DataFrame

@@ -13,9 +13,9 @@ import numpy as np
 import json
 
 #############################################################
-dossier = "C:/visulisation_detection_final/Liege_Traffic_Light2_Apres_reentrainement_pour_sam"
-dossier_json="C:/visulisation_detection_final/Liege_Traffic_Light2_Apres_reentrainement_pour_sam/Liege_Traffic_Light_Json"
-dossier_mask="C:/visulisation_detection_final/Liege_Traffic_Light2_Apres_reentrainement_pour_sam/Liege_Traffic_Light_Mask"
+dossier = "Img+BB"
+dossier_json="Sam/json"
+dossier_mask="Sam/mask"
 #categorie lammpost
 k=1
 #############################################################
@@ -25,10 +25,6 @@ device = "cuda"
 sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
 sam.to(device=device)
 predictor = SamPredictor(sam)
-
-
-
-
 # Liste tous les fichiers dans le dossier spécifié
 fichiers = [f for f in os.listdir(dossier) if f.endswith('.txt')]
 fichiers.sort(key=natural_sort_key)
@@ -90,6 +86,7 @@ for fichier in fichiers:
                 indices = np.where(mask)
                 if indices[0].size > 0:
                     bottom_pixel = (int(indices[1][-1]), int(indices[0][indices[0] == indices[0][-1]][-1]))
+                    top_pixel=(int(indices[1][0]),int(indices[0][0]))
                 else:
                     bottom_pixel = None
                     # Append the result for this mask to the results list
@@ -97,7 +94,8 @@ for fichier in fichiers:
                     "id": mask_id,
                     "isthing": True,
                     "category_id": k,
-                    "xy": bottom_pixel
+                    "xy": bottom_pixel,
+                    "xyt":top_pixel
                 })
                 # Increment mask ID for the next mask
                 mask_id += 1

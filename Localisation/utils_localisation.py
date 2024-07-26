@@ -190,7 +190,7 @@ def parse_image_info(image_info_file):
         #print(f"Error processing file: {e}")
         return []
 ########################################################
-def find_intersections(points, rays,ab,V):
+def find_intersections(points, rays,ab,V,V2):
     intersectionss = []
     num_points = len(points)
 
@@ -204,7 +204,7 @@ def find_intersections(points, rays,ab,V):
                     intersection = intersection_of_half_lines(points[i][:2],points[j][:2], ab[i][n], ab[j][m], rays[i][n], rays[j][m])
                     if intersection:
                         o+=1
-                        intersectionss.append([intersection, (i, rays[i][n],n),(j, rays[j][m],m),V[i][n],V[j][m]])
+                        intersectionss.append([intersection, (i, rays[i][n],n),(j, rays[j][m],m),V[i][n],V[j][m],V2[i][n],V2[j][m]])
 
                             
 
@@ -323,6 +323,7 @@ def calculate_distance(x1, y1, x2, y2):
 def calculate_Z(d,v,z):
     return z+d*tan(v*math.pi/200)
 
-
+def calculate_H(d,v):
+    return d*tan(v*math.pi/200)
 
 

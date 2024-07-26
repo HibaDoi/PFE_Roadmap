@@ -8,12 +8,12 @@ def more_filtering(input,output,output_shp,max_dist):
     # Load the data from the text file
     df = pd.read_csv(input)
     # Calculate new centroid positions based on existing points in each cluster
-    new_centroids = df.groupby('cluster')[['x', 'y']].mean().reset_index()
+    new_centroids = df.groupby('cluster')[['centroid_xf', 'centroid_yf']].mean().reset_index()
     new_centroids.columns = ['cluster', 'new_centroid_x', 'new_centroid_y']
     # Merge the new centroids back to the original DataFrame
     df = df.merge(new_centroids, on='cluster')
     # Calculate the Euclidean distance to the new centroid for each point
-    df['new_distance_to_centroid'] = np.sqrt((df['x'] - df['new_centroid_x'])**2 + (df['y'] - df['new_centroid_y'])**2)
+    df['new_distance_to_centroid'] = np.sqrt((df['centroid_xf'] - df['new_centroid_x'])**2 + (df['centroid_yf'] - df['new_centroid_y'])**2)
     # Determine the number of points in each cluster
     cluster_counts = df['cluster'].value_counts()
     # Calculate points that would be removed by the filter
@@ -27,15 +27,16 @@ def more_filtering(input,output,output_shp,max_dist):
     filtered_df = df[(~df['cluster'].isin(valid_clusters) | ~df['remove'])]
     # Drop the temporary 'remove' column
     filtered_df = filtered_df.drop(columns='remove')
+
     #############################################################################################################################################
     filtered_df = filtered_df.drop(['new_centroid_x', 'new_centroid_y','new_distance_to_centroid'], axis=1)
     # Calculate new centroid positions based on existing points in each cluster
-    new_centroids = filtered_df.groupby('cluster')[['x', 'y']].mean().reset_index()
+    new_centroids = filtered_df.groupby('cluster')[['centroid_xf', 'centroid_yf']].mean().reset_index()
     new_centroids.columns = ['cluster', 'new_centroid_x', 'new_centroid_y']
     # Merge the new centroids back to the original DataFrame
     filtered_df = filtered_df.merge(new_centroids, on='cluster')
     # Calculate the Euclidean distance to the new centroid for each point
-    filtered_df['new_distance_to_centroid'] = np.sqrt((filtered_df['x'] - filtered_df['new_centroid_x'])**2 + (filtered_df['y'] - filtered_df['new_centroid_y'])**2)
+    filtered_df['new_distance_to_centroid'] = np.sqrt((filtered_df['centroid_xf'] - filtered_df['new_centroid_x'])**2 + (filtered_df['centroid_yf'] - filtered_df['new_centroid_y'])**2)
     #############################################################################################################################################
     # Calculate points that would be removed by the filter
     filtered_df['remove'] = (filtered_df['new_distance_to_centroid'] > 0.5)
@@ -47,7 +48,7 @@ def more_filtering(input,output,output_shp,max_dist):
     # Only apply the filter where the number of removals is less than the total points in the cluster
     filtered_filtered_df2 = filtered_df[(~filtered_df['cluster'].isin(valid_clusters1) | ~filtered_df['remove'])]
     Zdf=filtered_filtered_df2[['cluster',"Z1","Z2"]]
-    filtered_filtered_df2[['cluster',"Z1","Z2"]].to_csv("sanity.csv", index=False)
+    print(filtered_filtered_df2)
     #######################################################################################################
     #iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
     result_df = Zdf.melt(id_vars=['cluster'], value_vars=['Z1', 'Z2'])
@@ -55,19 +56,17 @@ def more_filtering(input,output,output_shp,max_dist):
     Z=[]
     for cluster in clusters:
         Z_clustred = result_df[result_df['cluster'] == cluster].copy()
-        print(Z_clustred)
+
         dbscan = DBSCAN(eps=0.1, min_samples=2)
         Z_clustred.loc[:, 'clusterZZt'] = dbscan.fit_predict(Z_clustred[['value']])
         Z_clustred = Z_clustred[Z_clustred['clusterZZt'] != -1]
         cluster_counts = Z_clustred['clusterZZt'].value_counts()
-        print(cluster_counts.shape[0])
-        print(cluster_counts)
+
         if cluster_counts.shape[0] !=0:
             most_frequent_cluster = cluster_counts.idxmax()
             Z_filtred = Z_clustred[Z_clustred['clusterZZt'] == most_frequent_cluster]
             Z_filtred=Z_filtred[['value']].mean().reset_index()
-            print(Z_filtred.values.tolist()[0][1])
-            print("#iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+
         #####################################################################################################")
             Z.append(Z_filtred.values.tolist()[0][1])
         else:
@@ -77,9 +76,11 @@ def more_filtering(input,output,output_shp,max_dist):
     #####################################################################################################
     filtered_filtered_df23 = filtered_filtered_df2.groupby(['cluster']).agg(
                     mean_distance_to_centroid=('new_distance_to_centroid', 'mean'),
-                    new_centroid_x=('x', 'mean'),  # Replace 'centroid_xf' with your x-coordinate column
-                    new_centroid_y=('y', 'mean'),   # Replace 'centroid_yf' with your y-coordinate column
+                    new_centroid_x=('centroid_xf', 'mean'),  # Replace 'centroid_xf' with your x-coordinate column
+                    new_centroid_y=('centroid_yf', 'mean'),   # Replace 'centroid_yf' with your y-coordinate column
                     mean_distance_to_camera=('mean_camera_distance', 'mean'),
+                    H1=('H1', 'mean'),  # Replace 'centroid_xf' with your x-coordinate column
+                    H2=('H2', 'mean'), 
                 ).reset_index()
     filtered_filtered_df23['Z_final']=Z
     ################################################################################################################"
@@ -114,7 +115,7 @@ def more_filtering(input,output,output_shp,max_dist):
 
 
 
-input='Localisation\csv_file\_2_unique_points_without_duplicat_from_localisation.csv'
-output='Localisation\csv_file\_3_Centroide_final_based_on_distance_to_camera.csv'
-output_shp='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera.shp'
+input='Localisation\csv_file\_2_unique_points_without_duplicat_from_localisation_H.csv'
+output='Localisation\csv_file\_3_Centroide_final_based_on_distance_to_camera_H.csv'
+output_shp='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera_H.shp'
 more_filtering(input,output,output_shp,25)
