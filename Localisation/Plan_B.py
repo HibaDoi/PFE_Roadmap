@@ -5,11 +5,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-camera_info_file="./4_Localisation/localisation/output.txt"
-directory_path = 'C:/visulisation_detection_final/Liege_Traffic_Light2_Apres_reentrainement_pour_sam/Liege_Traffic_Light_Mask'
-file_path = '4_Localisation/localisation/1_traffic_light.csv'
-input_CSV=file_path
-output_CSV='4_Localisation/localisation/final_traffic_light.csv'
+camera_info_file="Localisation/Camera_parameter.txt"
+directory_path = 'Json+mask'
+file_path = 'Localisation\csv_file\_1_raw_points_from_localisation.csv'
+# input_CSV=file_path
+# output_CSV='4_Localisation/localisation/final_traffic_light.csv'
 def XYlocation(camera_info_file,directory_path,file_path):
     print("..................")
     u=traverse_directory_in_groups(directory_path)
@@ -33,7 +33,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
                 [0,0]]
         for i in range(4):
             filename=l[i]
-            json_filemane=l[i][:-4]+".json"
+            json_filemane=l[i]
             # print(json_filemane)
             # input("dddddddddddddd")
             with open(json_filemane, 'r') as file:
@@ -41,7 +41,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
             parts = l[i].split('\\')
             # print(parts)
             # input("dddddddddddddd")
-            target_entry = next((entry for entry in camera_info if entry['filename'] == 'Images\\'+parts[-1][:-4]+".jpg"), None)
+            target_entry = next((entry for entry in camera_info if entry['filename'] == parts[-1][:-5]+".jpg"), None)
             ab=[]
             GCP=[]
             G=[]
@@ -246,7 +246,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
             print("No Intersection Here")
     
 XYlocation(camera_info_file,directory_path,file_path)
-Total_cluster(input_CSV,output_CSV)
+# Total_cluster(input_CSV,output_CSV)
 
 
 

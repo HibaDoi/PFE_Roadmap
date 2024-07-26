@@ -69,7 +69,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
             print('0')
             continue
         else:
-            clustering = DBSCAN(eps=0.5, min_samples=2).fit(ff)
+            clustering = DBSCAN(eps=1, min_samples=2).fit(ff)
             df['cluster'] = clustering.labels_
         # Ajout de colonnes
         df['x'] = [uu[i][0][0] for i in range(len(uu))]
@@ -149,14 +149,19 @@ def XYlocation(camera_info_file,directory_path,file_path):
             # Calculer la distance de chaque point à son centroïde
             gg['distance_to_centroidf'] = gg.apply(lambda row: calculate_distance(row['x'], row['y'], row['centroid_xf'], row['centroid_yf']), axis=1)
             # Trier les données par cluster, combinaison de caméras, et distance, puis éliminer les doublons
-            ggg = gg.loc[:, ['cluster', 'x', 'y','distance_to_centroidf','distance_to_camera1','distance_to_camera2',"Z1","Z2"]]
+            ggg = gg.loc[:, ['cluster', 'centroid_xf', 'centroid_yf','distance_to_centroidf','distance_to_camera1','distance_to_camera2',"Z1","Z2"]]
             # Group by 'cluster', 'centroid_x', 'centroid_y', then calculate the mean of 'distance_to_centroid'
-            grouped_df = ggg
+            grouped_df = ggg.groupby(['cluster', 'centroid_xf', 'centroid_yf']).agg(
+                mean_distance_to_centroid=('distance_to_centroidf', 'mean'),
+                mean_camera_distance1=('distance_to_camera1', 'mean') ,
+                mean_camera_distance2=('distance_to_camera2', 'mean'),
+                Z1=("Z1", 'mean') ,
+                Z2=("Z2", 'mean')
+            ).reset_index()
+
             # Print the resulting DataFrame
-            grouped_df['mean_camera_distance'] = grouped_df[['distance_to_camera1', 'distance_to_camera2']].mean(axis=1)
-            # Drop the old camera distance columns if they are no longer needed
-            #grouped_df = grouped_df.drop(['mean_camera_distance1', 'mean_camera_distance2'], axis=1)
-            # Check if the file exists. If it does, append without headers. If not, write with headers.
+            grouped_df['mean_camera_distance'] = grouped_df[['mean_camera_distance1', 'mean_camera_distance1']].mean(axis=1)
+
             try:
                 # Attempt to read the file to check if it exists
                 pd.read_csv(file_path)

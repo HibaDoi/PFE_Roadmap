@@ -42,7 +42,7 @@ def calculate_heading(detect_obj_x, detect_obj_y, img_width, img_height, roll, p
     angle_vertical = math.atan(world_coord[2, 0]/math.sqrt( world_coord[0, 0]**2+world_coord[1, 0]**2))
     real_heading_degree = rad_to_degree(real_heading_rad)
     angle_vertical = rad_to_degree(angle_vertical)
-    return [real_heading_degree%360,angle_vertical]
+    return [real_heading_degree%360,angle_vertical%360]
 ########################################################
 def get_rotation_matrix_by_euler_angles(roll_degree, pitch_degree, heading_degree):
     roll_rad = degree_to_rad(roll_degree)
@@ -294,15 +294,16 @@ def appartient_a_la_demi_droite(x1, y1, xB, yB, azimuth_grades):
     
     return abs(t_x - t_y) < 1e-2 and t_x <= 0
 #################################################################################
+
 def Total_cluster(input_CSV,output_CSV):
     df = pd.read_csv(input_CSV)
     # Arrondir les colonnes 'x' et 'y' à quatre chiffres après la virgule
-    df['x'] = df['x'].round(5)
-    df['y'] = df['y'].round(5)
+    df['centroid_xf'] = df['centroid_xf'].round(5)
+    df['centroid_yf'] = df['centroid_yf'].round(5)
     # Supprimer les doublons
-    df = df.drop_duplicates(subset=['x', 'y'])
+    df = df.drop_duplicates(subset=['centroid_xf', 'centroid_yf'])
     # Apply DBSCAN
-    clustering = DBSCAN(eps=0.5, min_samples=3).fit(df[['x', 'y']])
+    clustering = DBSCAN(eps=0.5, min_samples=3).fit(df[['centroid_xf', 'centroid_yf']])
     df['cluster'] = clustering.labels_
     # Remove rows where cluster label is -1 (noise)
     df = df[df['cluster'] != -1]
@@ -320,7 +321,8 @@ def calculate_distance(x1, y1, x2, y2):
     return np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 def calculate_Z(d,v,z):
-    return z-d*tan(v*pi/200)
+    return z+d*tan(v*math.pi/200)
+
 
 
 

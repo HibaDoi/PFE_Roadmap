@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-camera_info_file="localisation/output.txt"
-directory_path = 'C:/visulisation_detection_final/Liege_Traffic_Lamppost/Liege_Lamppost_bat_Mask'
-file_path = 'localisation/1_Lamppost_bat.csv'
+camera_info_file="Localisation/Camera_parameter.txt"
+directory_path = 'Json+mask'
+file_path = 'Localisation\csv_file\_1_raw_points_from_localisation.csv'
 input_CSV=file_path
 output_CSV='localisation/1_Lamppost_final_bat.csv'
 def XYlocation(camera_info_file,directory_path,file_path):
@@ -233,18 +233,13 @@ def XYlocation(camera_info_file,directory_path,file_path):
             # Print the resulting DataFrame
             print(grouped_df)
 
-            #input("__________________88888888111111111111111118888888____________________")
+           
             grouped_df['mean_camera_distance'] = grouped_df[['mean_camera_distance1', 'mean_camera_distance2']].mean(axis=1)
 
             # Drop the old camera distance columns if they are no longer needed
             grouped_df = grouped_df.drop(['mean_camera_distance1', 'mean_camera_distance2'], axis=1)
 
             print(grouped_df)
-
-            # Specify the file path (change this path as needed for your environment)
-            
-
-            # Check if the file exists. If it does, append without headers. If not, write with headers.
             try:
                 # Attempt to read the file to check if it exists
                 pd.read_csv(file_path)
@@ -256,8 +251,8 @@ def XYlocation(camera_info_file,directory_path,file_path):
         else:
             print("No Intersection Here")
     
-# XYlocation(camera_info_file,directory_path,file_path)
-Total_cluster(input_CSV,output_CSV)
+XYlocation(camera_info_file,directory_path,file_path)
+# Total_cluster(input_CSV,output_CSV)
 
 
 
