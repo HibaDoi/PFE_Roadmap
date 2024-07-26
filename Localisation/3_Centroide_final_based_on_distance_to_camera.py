@@ -54,15 +54,25 @@ def more_filtering(input,output,output_shp,max_dist):
     clusters = result_df['cluster'].unique()  # Get unique clusters
     Z=[]
     for cluster in clusters:
-        Z_clustred=result_df[result_df['cluster'] == cluster]
+        Z_clustred = result_df[result_df['cluster'] == cluster].copy()
+        print(Z_clustred)
         dbscan = DBSCAN(eps=0.1, min_samples=2)
-        Z_clustred['clusterZZt'] = dbscan.fit_predict(Z_clustred[['value']])
+        Z_clustred.loc[:, 'clusterZZt'] = dbscan.fit_predict(Z_clustred[['value']])
         Z_clustred = Z_clustred[Z_clustred['clusterZZt'] != -1]
         cluster_counts = Z_clustred['clusterZZt'].value_counts()
-        most_frequent_cluster = cluster_counts.idxmax()
-        Z_filtred = Z_clustred[Z_clustred['clusterZZt'] == most_frequent_cluster]
-        Z_filtred=Z_filtred[['value']].mean().reset_index()
-        Z.append(Z_filtred.values.tolist()[0][1])
+        print(cluster_counts.shape[0])
+        print(cluster_counts)
+        if cluster_counts.shape[0] !=0:
+            most_frequent_cluster = cluster_counts.idxmax()
+            Z_filtred = Z_clustred[Z_clustred['clusterZZt'] == most_frequent_cluster]
+            Z_filtred=Z_filtred[['value']].mean().reset_index()
+            print(Z_filtred.values.tolist()[0][1])
+            print("#iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+        #####################################################################################################")
+            Z.append(Z_filtred.values.tolist()[0][1])
+        else:
+            Z.append(Z_clustred['value'].mean())
+            
     #iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
     #####################################################################################################
     filtered_filtered_df23 = filtered_filtered_df2.groupby(['cluster']).agg(
