@@ -25,11 +25,11 @@ def XYlocation(camera_info_file,directory_path,file_path):
                 [0,0],
                 [0,0]]
         for i in range(4):
-            json_filemane=l[i][:-5]+".json"
+            json_filemane=l[i]
             with open(json_filemane, 'r') as file:
                 data_xy = json.load(file)
             parts = l[i].split('\\')
-            target_entry = next((entry for entry in camera_info if entry['filename'] == parts[-1][:-5]+".jpg"), None)
+            target_entry = next((entry for entry in camera_info if entry['nom'] == parts[-1][:-5]+".jpg"), None)
             ab=[]
             GCP=[]
             G=[]
@@ -37,17 +37,17 @@ def XYlocation(camera_info_file,directory_path,file_path):
             V2=[]
             if target_entry:
                 for j in range(len(data_xy)):
-                    lon = target_entry['imj_lon']  # Assuming width is pitch for this example
-                    lat = target_entry['imj_lat']  # Assuming height is yaw for this example
-                    height = target_entry['imj_height']  # Assuming width is pitch for this example
-                    roll = target_entry['imj_roll']  # Assuming height is yaw for this example
-                    pitch = target_entry['imj_pitch']  # Assuming width is pitch for this example
-                    yaw = target_entry['imj_yaw']  # Assuming height is yaw for this example
+                    x = target_entry['x']  # Assuming width is pitch for this example
+                    y = target_entry['y']  # Assuming height is yaw for this example
+                    z = target_entry['z']  # Assuming width is pitch for this example
+                    roll = target_entry['roll']  # Assuming height is yaw for this example
+                    pitch = target_entry['Pitch']  # Assuming width is pitch for this example
+                    yaw = target_entry['Yaw']  # Assuming height is yaw for this example
                     x=data_xy[j]["xy"][0]
                     y=data_xy[j]["xy"][1]
                     xt=data_xy[j]["xyt"][0]
                     yt=data_xy[j]["xyt"][1]
-                    ii=[lon,lat,height,roll,pitch,yaw ,x,y,xt,yt]
+                    ii=[x,y,z,roll,pitch,yaw ,x,y,xt,yt]
                     gisement,angle_vertical,Camera_Coordinate_Lambert_72,Par_droit=ObjectCoordinat(ii[3:6],ii[0:3],(ii[6], ii[7]),img_width,img_height)
                     _,angle_vertical2,_,_=ObjectCoordinat(ii[3:6],ii[0:3],(ii[8], ii[9]),img_width,img_height)
                     GCP.append([gisement,Camera_Coordinate_Lambert_72,Par_droit])
