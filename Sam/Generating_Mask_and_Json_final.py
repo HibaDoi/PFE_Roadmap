@@ -13,11 +13,15 @@ import numpy as np
 import json
 
 #############################################################
-dossier = "Img+BB"
-dossier_json="Sam/json"
-dossier_mask="Sam/mask"
+dossier = "C:/visulisation_detection_final/Arlon_Lamppost"
+dossier_json="C:/visulisation_detection_final/Arlon_Lamppost/json_single_adding_hauteur"
+dossier_mask="C:/visulisation_detection_final/Arlon_Lamppost/mask_single_adding_hauteur"
+#categorie single
+line_start='0'
 #categorie lammpost
 k=1
+img_width=7040
+img_height=3520
 #############################################################
 sam_checkpoint = "C:/Users/Administrateur/pfe_hiba_workspace/SAM/sam_vit_h_4b8939.pth"
 model_type = "vit_h"
@@ -32,7 +36,6 @@ p=-1
 num_colors = 10  # Example number of colors, you can change as needed
 palette = []
 for i in range(num_colors):
-    print("rrrrrrrrrrrrrrrrrr")
     # Generate a random RGB color tuple for each index
     color = tuple(np.random.randint(0, 256, size=3))
     palette.extend(color)
@@ -46,7 +49,7 @@ for fichier in fichiers:
         new_path = root + ".jpg"
 
         lignes = file.readlines()
-        lignes = [line for line in lignes if line.startswith('0')]
+        lignes = [line for line in lignes if line.startswith(line_start)]
         l=[]
         if lignes != []:
             for i in range(len(lignes)):
@@ -59,7 +62,7 @@ for fichier in fichiers:
                 # Remove the first element as it's not required
                 result = data_floats[1:]
 
-                gg=bbyolo2xyxy(result)
+                gg=bbyolo2xyxy(result,img_width,img_height)
                 l.append(gg)
             image = preprocess_image(new_path)
             predictor.set_image(image)
@@ -81,11 +84,14 @@ for fichier in fichiers:
                 # Find the coordinates of the bottom pixel in the mask
                 # The mask is represented by pixels with a value of 1
                 mask = image_array[0] == True
-                
                 # Get the bottom-most pixel's coordinates
                 indices = np.where(mask)
                 if indices[0].size > 0:
-                    bottom_pixel = (int(indices[1][-1]), int(indices[0][indices[0] == indices[0][-1]][-1]))
+                    y_bottom = indices[0].max()
+                    m=indices[0]==y_bottom
+                    mm = np.where(m)
+                    median_value = np.median(mm)
+                    bottom_pixel = (int(indices[1][int(median_value)]), int(y_bottom))
                     top_pixel=(int(indices[1][0]),int(indices[0][0]))
                 else:
                     bottom_pixel = None
@@ -112,9 +118,7 @@ for fichier in fichiers:
                 
 
             ######################################################## 
-            # Define the size of the image
-            width, height =  8192,4096  # Example dimensions, you can change as needed
-            data = np.zeros((4096,8192), dtype=np.uint8)
+            data = np.zeros((img_height,img_width), dtype=np.uint8)
             masks =masks.cpu()
             masks = masks.numpy()
             for i in range(len(masks)):

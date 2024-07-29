@@ -41,9 +41,9 @@ def show_box(box, ax):
     x0, y0 = box[0], box[1]
     w, h = box[2] - box[0], box[3] - box[1]
     ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))  
-def bbyolo2xyxy(bb):
+def bbyolo2xyxy(bb,image_width, image_height ):
     # Image dimensions
-    image_width, image_height = 8192,4096
+    
     
     # Convert YOLO format to xyxy format
     center_x = bb[0] * image_width

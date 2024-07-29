@@ -28,7 +28,7 @@ def change_pixel_to_red(image_path, x, y,x1, y1):
 # Example usage
 image_path = "Sam/mask/VLg-91001-2023-02-11-083047000_0.png"  # Replace with the path to your image
 
-x, y = 4437, 2350 # Replace with the coordinates of the pixel you want to change
+x, y = 4432, 2350 # Replace with the coordinates of the pixel you want to change
 x1, y1 = 4431, 1326
 new_pixel_value = change_pixel_to_red(image_path, x, y,x1,y1)
 print(f"The new color of the pixel at ({x}, {y}) is {new_pixel_value}")
