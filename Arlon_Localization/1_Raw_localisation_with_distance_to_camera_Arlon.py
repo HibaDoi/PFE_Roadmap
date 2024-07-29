@@ -12,18 +12,17 @@ def XYlocation(camera_info_file,directory_path,file_path):
     u=traverse_directory_in_groups(directory_path)
     camera_info=parse_image_info(camera_info_file)
     for j in range(len(u)-4) :
-        print("________________________________Premier 4 points__________________________________________")
-        print(str(u[j]))
+        print("_______________Premier {j} 4 points________________")
         l=[str(u[j]) ,str(u[j+1]),str(u[j+2]),str(u[j+3])]
         V_total=[]
         V_total2=[]
         ab_total=[]
         GCP_total=[]
         G_total=[]
-        C_total=[[0,0],
-                [0,0],
-                [0,0],
-                [0,0]]
+        C_total=[[],
+                 [],
+                 [],
+                 []]
         for i in range(4):
             json_filemane=l[i]
             with open(json_filemane, 'r') as file:
@@ -48,12 +47,12 @@ def XYlocation(camera_info_file,directory_path,file_path):
                     xt=data_xy[j]["xyt"][0]
                     yt=data_xy[j]["xyt"][1]
                     ii=[x,y,z,roll,pitch,yaw ,x,y,xt,yt]
-                    gisement,angle_vertical,Camera_Coordinate_Lambert_72,Par_droit=ObjectCoordinat(ii[3:6],ii[0:3],(ii[6], ii[7]),img_width,img_height)
+                    gisement,angle_vertical,Par_droit=ObjectCoordinat(ii[3:6],ii[0:3],(ii[6], ii[7]),img_width,img_height)
                     _,angle_vertical2,_,_=ObjectCoordinat(ii[3:6],ii[0:3],(ii[8], ii[9]),img_width,img_height)
-                    GCP.append([gisement,Camera_Coordinate_Lambert_72,Par_droit])
+                    GCP.append([gisement,ii[0:3],Par_droit])
                     ab.append(Par_droit)
                     G.append(gisement)
-                    C_total[i]=Camera_Coordinate_Lambert_72
+                    C_total[i]=ii[0:3]
                     V.append(angle_vertical)
                     V2.append(angle_vertical2)
                     # Calculate intersections    
@@ -96,6 +95,7 @@ def XYlocation(camera_info_file,directory_path,file_path):
         df['xcamera2coo'] = [C_total[uu[i][2][0]][0] for i in range(len(uu))]
         df['ycamera2coo'] = [C_total[uu[i][2][0]][1] for i in range(len(uu))]
         df['zcamera2coo'] = [C_total[uu[i][2][0]][2] for i in range(len(uu))]
+        print(df)
         df_filtered = df[df['cluster'] != -1]
         if not df_filtered.empty :
             # Affichage du DataFrame filtré

@@ -98,12 +98,11 @@ def distance(point1, point2):
     x2, y2 = point2
     return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 ############################################################################################
-def ObjectCoordinat(Camera_Orientation,Camera_Coordinate_WGS,P,w,h):
-    gisement=calculate_heading(P[0],P[1],w, h , Camera_Orientation[0],Camera_Orientation[1],-Camera_Orientation[2]+90)[0]*200/180
-    angle_verticale=calculate_heading(P[0],P[1],w, h , Camera_Orientation[0],Camera_Orientation[1],-Camera_Orientation[2]+90)[1]*200/180
-    Camera_Coordinate_Lambert_72=geographic_to_rectangular(Camera_Coordinate_WGS[0],Camera_Coordinate_WGS[1],Camera_Coordinate_WGS[2])
-    Par_droit=droit(Camera_Coordinate_Lambert_72,(100-gisement)*pi/200)
-    return gisement,angle_verticale,Camera_Coordinate_Lambert_72,Par_droit
+def ObjectCoordinat(Camera_Orientation,Camera_Coordinate_31370,P,w,h):
+    gisement=calculate_heading(P[0],P[1],w, h , -Camera_Orientation[0],-Camera_Orientation[1],-Camera_Orientation[2])[0]*200/180
+    angle_verticale=calculate_heading(P[0],P[1],w, h , -Camera_Orientation[0],-Camera_Orientation[1],-Camera_Orientation[2])[1]*200/180
+    Par_droit=droit(Camera_Coordinate_31370,(100-gisement)*pi/200)
+    return gisement,angle_verticale,Par_droit
 ####################################################################
 def parse_image_info(image_info_file):
     try:
@@ -113,13 +112,13 @@ def parse_image_info(image_info_file):
             for line in f:
                 parts = line.strip().split(',')
                 parsed_data.append({
-                    'imj_lon': float(parts[0].strip()),
-                    'imj_lat': float(parts[1].strip()),
-                    'imj_height': float(parts[2].strip()),
-                    'imj_roll': float(parts[3].strip()),
-                    'imj_pitch': float(parts[4].strip()),
-                    'imj_yaw': float(parts[5].strip()),
-                    'filename': parts[6].strip()
+                    'nom': parts[1].strip(),
+                    'x': float(parts[2].strip()),
+                    'y': float(parts[3].strip()),
+                    'z': float(parts[4].strip()),
+                    'roll': float(parts[18].strip()),
+                    'Pitch': float(parts[19].strip()),
+                    'Yaw': float(parts[20].strip())
                 })
         return parsed_data
     except Exception as e:
@@ -169,26 +168,6 @@ def find_ray_intersection(p1, azimuth1,a1,b1, p2, azimuth2,a2,b2):
     ##########################################
     #########################################
 ########################################################
-def parse_image_info(image_info_file):
-    try:
-        parsed_data = []
-        with open(image_info_file, 'r') as f:
-            next(f)  # Skip the header
-            for line in f:
-                parts = line.strip().split(',')
-                parsed_data.append({
-                    'imj_lon': float(parts[0].strip()),
-                    'imj_lat': float(parts[1].strip()),
-                    'imj_height': float(parts[2].strip()),
-                    'imj_roll': float(parts[3].strip()),
-                    'imj_pitch': float(parts[4].strip()),
-                    'imj_yaw': float(parts[5].strip()),
-                    'filename': parts[6].strip()
-                })
-        return parsed_data
-    except Exception as e:
-        #print(f"Error processing file: {e}")
-        return []
 ########################################################
 def find_intersections(points, rays,ab,V,V2):
     intersectionss = []
