@@ -40,7 +40,7 @@ def rotation_matrix_intrinsic(omega, phi, kappa):
     R = np.dot(R_x, np.dot(R_y, R_z))
     print(R)
     return R
-df = pd.read_csv('C:/Localisation/Arlon_camera_orientation.csv', sep=';')
+df = pd.read_csv('Arlon_Localization/camera_info.csv', sep=';')
 for index, row in df.iterrows():
     Omega1=row['omega']
     Phi1=row['phi']
@@ -53,4 +53,4 @@ for index, row in df.iterrows():
     df.loc[index, 'Yaw'] = kappa_deg
 
 print(df[['omega','roll','phi','Pitch','kappa','Yaw']])
-df.to_csv('RPY.csv')
+df.to_csv('Roll_pitch_Yaw_Arlon.csv')

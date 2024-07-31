@@ -13,9 +13,9 @@ import numpy as np
 import json
 
 #############################################################
-dossier = "C:/visulisation_detection_final/Arlon_Lamppost"
-dossier_json="C:/visulisation_detection_final/Arlon_Lamppost/json_single_adding_hauteur"
-dossier_mask="C:/visulisation_detection_final/Arlon_Lamppost/mask_single_adding_hauteur"
+dossier = "C:/visulisation_detection_final/Arlon_Traffic_light"
+dossier_json="C:/visulisation_detection_final/Arlon_Traffic_light/json_Traffic_light_adding_hauteur"
+dossier_mask="C:/visulisation_detection_final/Arlon_Traffic_light/mask_Traffic_light_adding_hauteur"
 #categorie single
 line_start='0'
 #categorie lammpost

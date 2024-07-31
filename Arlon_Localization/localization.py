@@ -2,13 +2,9 @@ from utils_localisation_Arlon import *
 import json
 from sklearn.cluster import DBSCAN
 import pandas as pd
-img_width=7040
-img_height=3520
-camera_info_file="Roll_pitch_Yaw_Arlon.csv"
-#this should contain .json 
-directory_path = 'C:/visulisation_detection_final/Arlon_Traffic_light/json_Traffic_light_adding_hauteur'
-file_path = 'Arlon_Localization/geoparquet/1_raw_points_bat_traffic_light.csv'
-def XYlocation(camera_info_file,directory_path,file_path):
+
+
+def XYlocation(camera_info_file,directory_path,file_path,img_width,img_height):
     
     u=traverse_directory_in_groups(directory_path)
     camera_info=parse_image_info(camera_info_file)
@@ -195,21 +191,4 @@ def XYlocation(camera_info_file,directory_path,file_path):
                 grouped_df.to_csv(file_path, mode='w', header=True, index=False)
         else:
             print("_______________________No Intersection Here_______________________")
-    
-XYlocation(camera_info_file,directory_path,file_path)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     

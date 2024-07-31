@@ -42,7 +42,7 @@ def calculate_heading(detect_obj_x, detect_obj_y, img_width, img_height, roll, p
     angle_vertical = math.atan(world_coord[2, 0]/math.sqrt( world_coord[0, 0]**2+world_coord[1, 0]**2))
     real_heading_degree = rad_to_degree(real_heading_rad)
     angle_vertical = rad_to_degree(angle_vertical)
-    return [real_heading_degree%360,angle_vertical%360]
+    return [real_heading_degree%360,angle_vertical]
 ########################################################
 def get_rotation_matrix_by_euler_angles(roll_degree, pitch_degree, heading_degree):
     roll_rad = degree_to_rad(roll_degree)
@@ -70,10 +70,6 @@ def get_rotation_matrix_by_euler_angles(roll_degree, pitch_degree, heading_degre
     RotationMatrix = np.dot(np.dot(Rz, Ry), Rx)
     return RotationMatrix
 #######################################################################
-def geographic_to_rectangular(lon, lat, z):
-    transformer = Transformer.from_crs("EPSG:4326", "EPSG:31370", always_xy=True)
-    t = np.array([transformer.transform(lon,lat)[0], transformer.transform(lon,lat)[1], z])
-    return t.tolist()
 ###########################################################################################
 def droit(point,l):
     a=tan(l)
@@ -113,9 +109,9 @@ def parse_image_info(image_info_file):
                 parts = line.strip().split(',')
                 parsed_data.append({
                     'nom': parts[1].strip(),
-                    'x': float(parts[2].strip()),
-                    'y': float(parts[3].strip()),
-                    'z': float(parts[4].strip()),
+                    'x': float(parts[3].strip()),
+                    'y': float(parts[4].strip()),
+                    'z': float(parts[5].strip()),
                     'roll': float(parts[18].strip()),
                     'Pitch': float(parts[19].strip()),
                     'Yaw': float(parts[20].strip())
