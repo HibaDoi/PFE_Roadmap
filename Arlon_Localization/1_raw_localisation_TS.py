@@ -23,7 +23,7 @@ for i in range(len(label)):
     dossier_json=os.path.join(dossier,str(label[i])+str("_json"))
     directory_path = dossier_json
     file_path = os.path.join('Arlon_Localization/geoparquet',"1_raw_points_"+str(label[i])+".csv")
-    XYlocation(camera_info_file,directory_path,file_path)
+    XYlocation(camera_info_file,directory_path,file_path,img_width,img_height)
     
 
 

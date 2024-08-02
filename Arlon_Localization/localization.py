@@ -45,22 +45,21 @@ def XYlocation(camera_info_file,directory_path,file_path,img_width,img_height):
                     yaw = target_entry['Yaw']  # Assuming height is yaw for this example
                     x=data_xy[j]["xy"][0]
                     y=data_xy[j]["xy"][1]
-                    xt=data_xy[j]["xyt"][0]
-                    yt=data_xy[j]["xyt"][1]
-                    ii=[xx,yy,zz,roll,pitch,yaw ,x,y,xt,yt]
+
+                    ii=[xx,yy,zz,roll,pitch,yaw ,x,y]
                     gisement,angle_vertical,Par_droit=ObjectCoordinat(ii[3:6],ii[0:3],(ii[6], ii[7]),img_width,img_height)
-                    _,angle_vertical2,_=ObjectCoordinat(ii[3:6],ii[0:3],(ii[8], ii[9]),img_width,img_height)
+
                     GCP.append([gisement,ii[0:3],Par_droit])
                     ab.append(Par_droit)
                     G.append(gisement)
                     C_total[i]=ii[0:3]
                     V.append(angle_vertical)
-                    V2.append(angle_vertical2)
+
                     # Calculate intersections    
             else:
                 print(f"Filename  not found in the data.")
             V_total.append(V)
-            V_total2.append(V2)
+            V_total2=V_total
             ab_total.append(ab)
             GCP_total.append(GCP)
             G_total.append(G)

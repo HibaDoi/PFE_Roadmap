@@ -5,9 +5,10 @@ import pandas as pd
 
 camera_info_file="Localisation/Camera_parameter.txt"
 #this should contain .json 
-directory_path = 'Sam/json'
-file_path = 'Localisation\csv_file\_1_raw_points_from_localisation_H.csv'
-def XYlocation(camera_info_file,directory_path,file_path):
+directory_path = 'C:/visulisation_detection_final/Liege_Bus_Stop_pour_Localisation_sans_sam/Liege_Bus_Stop_json'
+file_path = 'Localisation/csv_file/_1_raw_points_from_localisation_Bus_Stop.csv'
+EX_Angle=False
+def XYlocation(camera_info_file,directory_path,file_path,EX_Angle):
     u=traverse_directory_in_groups(directory_path)
     camera_info=parse_image_info(camera_info_file)
     for j in range(len(u)-4) :
@@ -44,8 +45,12 @@ def XYlocation(camera_info_file,directory_path,file_path):
                     yaw = target_entry['imj_yaw']  # Assuming height is yaw for this example
                     x=data_xy[j]["xy"][0]
                     y=data_xy[j]["xy"][1]
-                    xt=data_xy[j]["xyt"][0]
-                    yt=data_xy[j]["xyt"][1]
+                    if EX_Angle:
+                        xt=data_xy[j]["xyt"][0]
+                        yt=data_xy[j]["xyt"][1]
+                    else:
+                        xt=x
+                        yt=y
                     ii=[lon,lat,height,roll,pitch,yaw ,x,y,xt,yt]
                     gisement,angle_vertical,Camera_Coordinate_Lambert_72,Par_droit=ObjectCoordinat(ii[3:6],ii[0:3],(ii[6], ii[7]))
                     _,angle_vertical2,_,_=ObjectCoordinat(ii[3:6],ii[0:3],(ii[8], ii[9]))
@@ -187,9 +192,29 @@ def XYlocation(camera_info_file,directory_path,file_path):
                 grouped_df.to_csv(file_path, mode='w', header=True, index=False)
         else:
             print("No Intersection Here")
-    
-XYlocation(camera_info_file,directory_path,file_path)
+XYlocation(camera_info_file,directory_path,file_path,EX_Angle)
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+# labels="C:/visulisation_detection_final/lables.txt"
+# import os 
+# # Open the file in read mode
+# with open(labels, 'r') as file:
+#     # Read lines into a list, stripping the newline character
+#     label = [line.strip() for line in file]
+# print(label)
 
+
+
+# for i in range(len(label)):
+#     dossier=os.path.join("C:/visulisation_detection_final/ALL_Classes_of_Traffic_sign",str(label[i]))
+#     dossier_json=os.path.join(dossier,str(label[i])+str("_json"))
+#     directory_path = dossier_json
+#     file_path = os.path.join('Localisation/csv_file/Traffic_sign',"1_raw_points_"+str(label[i])+".csv")
+#     XYlocation(camera_info_file,directory_path,file_path,EX_Angle)
+    
 
 
 

@@ -13,15 +13,15 @@ import numpy as np
 import json
 
 #############################################################
-dossier = "C:/visulisation_detection_final/Arlon_Traffic_light"
-dossier_json="C:/visulisation_detection_final/Arlon_Traffic_light/json_Traffic_light_adding_hauteur"
-dossier_mask="C:/visulisation_detection_final/Arlon_Traffic_light/mask_Traffic_light_adding_hauteur"
+dossier = "C:/visulisation_detection_final/Liege_Traffic_Lamppost"
+dossier_json="C:/visulisation_detection_final/Liege_Traffic_Lamppost/Liege_bat_Lamppost_Json_with_H"
+dossier_mask="C:/visulisation_detection_final/Liege_Traffic_Lamppost/Liege_bat_Lamppost_Mask_with_H"
 #categorie single
-line_start='0'
+line_start='1'
 #categorie lammpost
 k=1
-img_width=7040
-img_height=3520
+img_width=8192
+img_height=4096
 #############################################################
 sam_checkpoint = "C:/Users/Administrateur/pfe_hiba_workspace/SAM/sam_vit_h_4b8939.pth"
 model_type = "vit_h"

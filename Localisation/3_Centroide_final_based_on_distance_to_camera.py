@@ -4,7 +4,7 @@ from sklearn.cluster import DBSCAN
 import geopandas as gpd
 from shapely.geometry import Point
 # max distnace to camera 
-def more_filtering(input,output,output_shp,max_dist):
+def more_filtering(input,output,to_parquet,max_dist):
     # Load the data from the text file
     df = pd.read_csv(input)
     # Calculate new centroid positions based on existing points in each cluster
@@ -111,11 +111,11 @@ def more_filtering(input,output,output_shp,max_dist):
     # Set a coordinate reference system (CRS) if necessary, e.g., WGS84
     gdf.set_crs(epsg=31370, inplace=True)
     # Save to a shapefile
-    gdf.to_file(output_shp)
+    gdf.to_parquet(to_parquet)
 
 
 
 input='Localisation\csv_file\_2_unique_points_without_duplicat_from_localisation_H.csv'
 output='Localisation\csv_file\_3_Centroide_final_based_on_distance_to_camera_H.csv'
-output_shp='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera_H.shp'
-more_filtering(input,output,output_shp,25)
+to_parquet='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera_H.geoparquet'
+more_filtering(input,output,to_parquet,25)
