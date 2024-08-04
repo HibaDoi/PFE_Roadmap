@@ -3,8 +3,9 @@ import pandas as pd
 from sklearn.cluster import DBSCAN
 import geopandas as gpd
 from shapely.geometry import Point
+import os
 # max distnace to camera 
-def more_filtering(input,output,to_parquet,max_dist):
+def more_filtering(input,to_parquet,max_dist):
     # Load the data from the text file
     df = pd.read_csv(input)
     # Calculate new centroid positions based on existing points in each cluster
@@ -104,7 +105,7 @@ def more_filtering(input,output,to_parquet,max_dist):
     # Concatenate rows with 'cluster2' equal to -1 with the rows having the minimum 'mean_distance_to_camera'
     final_df = pd.concat([df_negative_ones, min_distance_df]).reset_index(drop=True)
     #########################################################################################################
-    final_df.to_csv(output, index=False)
+    # final_df.to_csv(output, index=False)
     geometry = [Point(xy) for xy in zip(final_df['new_centroid_x'],final_df['new_centroid_y'])]
     # Create a GeoDataFrame
     gdf = gpd.GeoDataFrame(final_df, geometry=geometry)
@@ -113,9 +114,18 @@ def more_filtering(input,output,to_parquet,max_dist):
     # Save to a shapefile
     gdf.to_parquet(to_parquet)
 
-
-
-input='Localisation\csv_file\_2_unique_points_without_duplicat_from_localisation_H.csv'
-output='Localisation\csv_file\_3_Centroide_final_based_on_distance_to_camera_H.csv'
-to_parquet='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera_H.geoparquet'
-more_filtering(input,output,to_parquet,25)
+output_dir= "Arlon_Localization/_3_final_Arlon"
+input_dir="Arlon_Localization/_2_csv"
+print('////////////////////////:')
+# input='Localisation\csv_file\_2_unique_points_without_duplicat_from_localisation_H.csv'
+# output='Localisation\csv_file\_3_Centroide_final_based_on_distance_to_camera_H.csv'
+# to_parquet='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera_H.geoparquet'
+files = os.listdir(input_dir)
+csv_files = [file for file in files if file.endswith('.csv')]
+print(files)
+for file in csv_files:
+    input=os.path.join(input_dir,file)
+    to_parquet=os.path.join(output_dir,"Final"+file[40:-4]+".geoparquet")
+    # print(to_parquet)
+    more_filtering(input,to_parquet,25)
+    
