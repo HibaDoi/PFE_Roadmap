@@ -57,7 +57,7 @@ def more_filtering(input,to_parquet,max_dist):
     Z=[]
     for cluster in clusters:
         Z_clustred = result_df[result_df['cluster'] == cluster].copy()
-
+        Z_clustredjj = result_df[result_df['cluster'] == cluster].copy()
         dbscan = DBSCAN(eps=0.1, min_samples=2)
         Z_clustred.loc[:, 'clusterZZt'] = dbscan.fit_predict(Z_clustred[['value']])
         Z_clustred = Z_clustred[Z_clustred['clusterZZt'] != -1]
@@ -71,7 +71,7 @@ def more_filtering(input,to_parquet,max_dist):
         #####################################################################################################")
             Z.append(Z_filtred.values.tolist()[0][1])
         else:
-            Z.append(Z_clustred['value'].mean())
+            Z.append(Z_clustredjj['value'].mean())
             
     #iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
     #####################################################################################################
@@ -114,18 +114,19 @@ def more_filtering(input,to_parquet,max_dist):
     # Save to a shapefile
     gdf.to_parquet(to_parquet)
 
-output_dir= "Arlon_Localization/_3_final_Arlon"
-input_dir="Arlon_Localization/_2_csv"
+output_dir= "Localisation/_3_final_point/Traffic_sign"
+input_dir="Localisation/_2_csv_file/Traffic_sign"
 print('////////////////////////:')
-# input='Localisation\csv_file\_2_unique_points_without_duplicat_from_localisation_H.csv'
-# output='Localisation\csv_file\_3_Centroide_final_based_on_distance_to_camera_H.csv'
-# to_parquet='Localisation\shp_file\_3_Centroide_final_based_on_distance_to_camera_H.geoparquet'
+
 files = os.listdir(input_dir)
 csv_files = [file for file in files if file.endswith('.csv')]
 print(files)
 for file in csv_files:
     input=os.path.join(input_dir,file)
-    to_parquet=os.path.join(output_dir,"Final"+file[40:-4]+".geoparquet")
+    to_parquet=os.path.join(output_dir,"Final__"+file[54:-4]+"__.geoparquet")
     # print(to_parquet)
     more_filtering(input,to_parquet,25)
-    
+
+# input='Arlon_Localization/_2_csv/_2_unique_points_without_duplicat_from_localisation_H__single_lamppost.csv'
+# to_parquet='Arlon_Localization/_3_final_Arlon/Finalocalisation_H__single_lamppost.geoparquet'
+# more_filtering(input,to_parquet,25)

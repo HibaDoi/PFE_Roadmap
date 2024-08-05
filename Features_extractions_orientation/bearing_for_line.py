@@ -4,7 +4,8 @@ from shapely.ops import nearest_points
 import pandas as pd
 from utils import *
 # Charger le fichier SHP
-line_gdf = gpd.read_file("roads/road_liege_31370_sans_nett_sans_expolose.shp")
+line_gdf = gpd.read_file("Features_extractions_orientation/roads/road_liege_31370_sans_nett_sans_expolose.shp")
+line_gdf = line_gdf[~line_gdf['highway'].isin(['pedestrian', 'path','footway','cycleway',"steps"])]
 line_gdf=line_gdf.explode()
 segments_list = []
 i=0

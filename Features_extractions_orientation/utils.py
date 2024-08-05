@@ -37,8 +37,8 @@ def point_line_position(point, line):
     else:
         return 'on'
     
-def calculate_orientation(row):
+def calculate_orientation(row,r=-90,l=+90):
     if row['orientation'] == 'right':
-        return (row['bearing_l'] - 90)% 360
+        return (row['bearing_l'] +r)% 360
     elif row['orientation'] == 'left':
-        return (row['bearing_l'] +90 )% 360
+        return (row['bearing_l'] +l )% 360
