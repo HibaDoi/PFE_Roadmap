@@ -13,19 +13,15 @@ from ultralytics import YOLO
 model = YOLO("C:/Users/Administrateur/pfe_hiba_workspace/runs/classify/FOR_point_cloud/weights/best.pt")
 IMG_W=7040
 IMG_H=3520
-las = laspy.read("C:/Users/Administrateur/Desktop/KPConv-PyTorch/references/Double.las")
+las = laspy.read("C:/Users/Administrateur/Desktop/KPConv-PyTorch/segmentedmerged/outputmerged/final_track11.las")
 # Read the CSV file
 csv_file_path = 'Roll_pitch_Yaw_Arlon.csv'  # Replace with your actual CSV file path
 #######################################################################################
 def crop_images_based_on_yolo(image_path, annotation_path, output_path_base):
-    # Load the image
     img = Image.open(image_path)
-
-    # Read the annotation file
     with open(annotation_path, 'r') as file:
         lines = file.readlines()
-
-    # Process each bounding box
+        input(lines)
     for i, line in enumerate(lines):
         # Parse the YOLO format data: class x_center y_center width height (normalized)
         _, x_center, y_center, width, height = map(float, line.split())
@@ -50,7 +46,7 @@ def crop_images_based_on_yolo(image_path, annotation_path, output_path_base):
         cropped_img = img.crop(box)
 
         # Save the cropped image
-        cropped_img.save(f"{output_path_base}_ccccc_{i+1}.jpg")
+        cropped_img.save(f"{output_path_base}.jpg")
 #######################################################################################
 # Extract Z values and segmentID
 z_values = las.z
@@ -111,8 +107,8 @@ for segment_id in unique_segment_ids:
         def get_bounding_box_vertices(laz_file_path):
             # Open the LAZ file
 
-            min_x, min_y, min_z = las.header.min
-            max_x, max_y, max_z = las.header.max
+            min_x, min_y, min_z = segment_x_values.min(), segment_y_values.min(), segment_z_values.min()
+            max_x, max_y, max_z = segment_x_values.max(), segment_y_values.max(), segment_z_values.max()
 
             # Calculate all eight vertices of the bounding box
             vertices = [
@@ -163,16 +159,20 @@ for segment_id in unique_segment_ids:
             file.write(yolo_format)
         dir_img_arlon="C:/Users/Administrateur/pfe_hiba_workspace/PFE_HIBA/Image_Arlon"
         img_arlon=os.path.join(dir_img_arlon,closest_points.iloc[0]['nom'][:-4]+".jpg")
-        crop_images_based_on_yolo(img_arlon,closest_points.iloc[0]['nom'][:-4]+".txt", "output_path_base")
+        crop_images_based_on_yolo(img_arlon,closest_points.iloc[0]['nom'][:-4]+".txt", f"obj{segment_id}")
 
-        results = model.predict(source='output_path_base_crop_1.jpg',save_txt=True, conf=0.25)
-        print()
-        with open(os.path.join(results[0].save_dir,os.path.join("labels",'output_path_base_crop_1.txt')), 'r') as file:
+        results = model.predict(source='output_path_base_ccccc_1.jpg',save_txt=True, conf=0.25)
+        input("sir chof cropped")
+        with open(os.path.join(results[0].save_dir,os.path.join("labels",'obj.txt')), 'r') as file:
             line = file.readline()   
             print(line)
             #input("??????????????????????????????????")
             stat ,clas =  line.split()
             print(clas)
+
+        if os.path.exists(os.path.join(results[0].save_dir,os.path.join("labels",'output_path_base_ccccc_1.txt'))):
+        # Delete the file
+            os.remove(os.path.join(results[0].save_dir,os.path.join("labels",'output_path_base_ccccc_1.txt')))
         import geopandas as gpd
         from shapely.geometry import Point
 

@@ -6,8 +6,8 @@ def reprojection(point,orien_coor,XYZ_coor,img_width,img_height):
     x,y,z=XYZ_coor
     
     Orientation_degree=[0,0,0]
-    Orientation_degree[0]=-orien_coor[0]
-    Orientation_degree[1]=-orien_coor[1]
+    Orientation_degree[0]=orien_coor[0]
+    Orientation_degree[1]=orien_coor[1]
     Orientation_degree[2]=-orien_coor[2]
     A=np.array(get_rotation_matrix_by_euler_angles(Orientation_degree[0],Orientation_degree[1],Orientation_degree[2]))
     A_inv = np.linalg.inv(A)
