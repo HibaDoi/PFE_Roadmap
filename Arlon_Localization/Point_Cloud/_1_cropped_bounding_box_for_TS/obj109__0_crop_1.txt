@@ -1,5 +1,0 @@
-1.00 A51
-0.00 D3_Straight_or_Right
-0.00 D1b_left
-0.00 A7b
-0.00 C21_7t

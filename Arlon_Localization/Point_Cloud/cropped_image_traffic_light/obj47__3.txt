@@ -1,5 +1,0 @@
-0.95 C1
-0.04 Traffic_Light
-0.00 F103
-0.00 E1
-0.00 done_Railway_Crossbuck

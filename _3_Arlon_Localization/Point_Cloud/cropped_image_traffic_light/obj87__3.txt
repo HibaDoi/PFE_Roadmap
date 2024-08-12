@@ -1,0 +1,5 @@
+0.44 D1b_right
+0.37 Lamppost
+0.05 D5
+0.04 E1
+0.03 D1d

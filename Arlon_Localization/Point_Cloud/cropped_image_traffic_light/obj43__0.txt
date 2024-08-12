@@ -1,5 +1,0 @@
-1.00 Traffic_Light
-0.00 C1
-0.00 D1b_right
-0.00 D3_straight_or_left
-0.00 E1

@@ -1,5 +1,0 @@
-0.67 Lamppost
-0.25 Traffic_Light
-0.06 done_Railway_Crossbuck
-0.00 A14
-0.00 B15

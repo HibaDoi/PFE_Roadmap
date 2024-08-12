@@ -1,0 +1,5 @@
+0.29 Lamppost
+0.20 F14
+0.18 done_Railway_Crossbuck
+0.14 E9
+0.13 C21_7t

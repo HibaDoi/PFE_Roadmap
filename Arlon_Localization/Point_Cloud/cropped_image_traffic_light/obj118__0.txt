@@ -1,5 +1,0 @@
-0.98 Traffic_Light
-0.02 Lamppost
-0.00 A51
-0.00 E9
-0.00 F14

@@ -1,0 +1,5 @@
+0.67 Traffic_Light
+0.12 D7
+0.05 done_30 limit
+0.03 D1b_right
+0.03 E1

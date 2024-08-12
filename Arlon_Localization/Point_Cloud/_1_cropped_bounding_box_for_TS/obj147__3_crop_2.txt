@@ -1,5 +1,0 @@
-0.96 F19
-0.02 F49
-0.01 D3_straight_or_left
-0.00 A51
-0.00 D3_Straight_or_Right

@@ -1,5 +1,0 @@
-0.79 Lamppost
-0.16 C11
-0.01 C19
-0.01 A7c
-0.00 done_30 limit

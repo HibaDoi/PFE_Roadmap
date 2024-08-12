@@ -1,0 +1,5 @@
+0.60 Traffic_Light
+0.32 F19
+0.03 D3_straight_or_left
+0.01 A51
+0.01 A14

@@ -1,0 +1,5 @@
+1.00 Lamppost
+0.00 Traffic_Light
+0.00 D1b_left
+0.00 C1
+0.00 F17

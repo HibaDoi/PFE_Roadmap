@@ -1,0 +1,5 @@
+0.49 F103
+0.17 C21_7t
+0.12 Lamppost
+0.08 Traffic_Light
+0.05 done_Railway_Crossbuck

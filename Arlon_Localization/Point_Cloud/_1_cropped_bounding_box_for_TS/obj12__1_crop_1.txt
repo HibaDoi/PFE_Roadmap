@@ -1,5 +1,0 @@
-0.53 D1b_right
-0.46 D1e
-0.00 D3_straight_or_left
-0.00 D1c
-0.00 D1b_left

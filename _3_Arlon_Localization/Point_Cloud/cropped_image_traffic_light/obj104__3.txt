@@ -1,0 +1,5 @@
+0.64 Lamppost
+0.35 Traffic_Light
+0.00 done_Railway_Crossbuck
+0.00 done_30 limit
+0.00 F17

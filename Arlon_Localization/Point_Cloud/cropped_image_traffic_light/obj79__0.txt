@@ -1,5 +1,0 @@
-0.71 Traffic_Light
-0.17 done_30 limit
-0.08 E9
-0.02 Lamppost
-0.01 done_Railway_Crossbuck

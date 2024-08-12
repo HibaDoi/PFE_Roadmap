@@ -1,5 +1,0 @@
-0.91 Lamppost
-0.04 Traffic_Light
-0.02 D1b_right
-0.01 A1b
-0.01 F5

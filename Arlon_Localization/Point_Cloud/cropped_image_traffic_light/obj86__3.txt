@@ -1,5 +1,0 @@
-0.95 Lamppost
-0.03 Traffic_Light
-0.00 done_30 limit
-0.00 A31
-0.00 F89

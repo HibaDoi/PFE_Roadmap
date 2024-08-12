@@ -1,5 +1,0 @@
-0.50 Traffic_Light
-0.27 E9
-0.22 done_Railway_Crossbuck
-0.01 C21_7t
-0.00 C21_5t

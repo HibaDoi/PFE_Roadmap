@@ -1,5 +1,0 @@
-1.00 E3
-0.00 D1d
-0.00 E1
-0.00 D1c
-0.00 D3_straight_or_left

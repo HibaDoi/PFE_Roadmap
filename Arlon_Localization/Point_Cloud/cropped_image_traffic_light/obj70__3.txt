@@ -1,5 +1,0 @@
-0.71 Lamppost
-0.08 D7
-0.07 done_30 limit
-0.05 E9
-0.04 D5
