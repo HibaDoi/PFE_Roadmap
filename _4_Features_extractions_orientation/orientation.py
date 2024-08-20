@@ -4,10 +4,10 @@ from shapely.ops import nearest_points
 import pandas as pd
 from utils import *
 # Charger le fichier SHP
-final='Localisation/_4_geoparquet_with_orientation/liege_Bus_Stop_final.geoparquet'
-points_gdf = gpd.read_parquet("Localisation/_3_final_point/Final__Bus_Stop__.geoparquet")
+points_gdf=gpd.read_parquet('_2_liege_Localisation/_3_final_point/Final__lamppost_single__.geoparquet')
+final = "_2_liege_Localisation/_4_geoparquet_with_orientation/liege_lamppost_final_debegging.geoparquet"
 points_gdf ['FID']=range(len(points_gdf))
-segments_line_gdf= gpd.read_parquet('road_segments_with_bearing.geoparquet')
+segments_line_gdf= gpd.read_parquet('_0_input_data/road_segments_with_bearing.geoparquet')
 pd.set_option('display.max_colwidth', None)
 def orientatioon(points_gdf,segments_line_gdf,final):
     # Create a spatial index for the lines layer to improve performance

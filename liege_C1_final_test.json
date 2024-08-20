@@ -1,0 +1,85 @@
+{
+    "type": "CityJSON",
+    "version": "2.0",
+    "CityObjects": {
+        "758b18e8-3a67-4794-b7c2-29f5a66f1f32": {
+            "type": "GenericCityObject",
+            "attributes": {
+                "G_obj": 307.0307322712402
+            },
+            "geometry": [
+                {
+                    "type": "GeometryInstance",
+                    "template": 0,
+                    "boundaries": [
+                        0
+                    ],
+                    "transformationMatrix": [1,0,0,0,
+                                             0,1,0,0,
+                                             0,0,1,0,
+                                             0,0,0,1]
+                    
+                }
+            ]
+        }
+        
+    },
+    "vertices": [
+        [
+            235821.9801,
+            148556.198,
+            0.0
+        ]
+    ],
+"geometry-templates":{
+    "vertices-templates":[
+[ -5.00 ,  -5.00 , -5],
+[  5.0 ,  -5.00 , -5],
+[  5.0 ,   5.0 , -5],
+[ -5.00 ,   5.0 , -5],
+[ -5.00 ,  -5.00 ,  5],
+[  5.0 ,  -5.00 ,  5],
+[  5.0 ,   5.0 ,  5],
+[ -5.00 ,   5.0 ,  5]
+],
+"templates":[{
+    "boundaries":[
+    [[0, 3, 2, 1]],  
+    [[4, 5, 6, 7]],  
+    [[0, 1, 5, 4]],  
+    [[1, 2, 6, 5]],  
+    [[2, 3, 7, 6]], 
+    [[0, 4, 7, 3]]   
+  ],
+  "textures": [
+  
+  {
+    "type": "JPG",
+    "image": "C:/Users/Administrateur/Desktop/téléchargement.png",
+    "wrapMode": "wrap",
+    "textureType": "unknown",
+    "borderColor": [0.0, 0.1, 0.2, 1.0]
+  }      
+],
+
+
+
+    "lod":"1",
+    "type":"MultiSurface"
+}]},
+    "transform": {
+        "scale": [
+            1,
+            1,
+            1
+        ],
+        "translate": [
+            0,
+            0,
+            0
+        ]
+    },
+    "metadata": {
+        "referenceSystem": "http://www.opengis.net/def/crs/EPSG/0/31370"
+    }
+}
