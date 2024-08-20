@@ -1,0 +1,30 @@
+{
+    "type": "CityJSON",
+    "version": "1.0",
+    "CityObjects": {
+      "building1": {
+        "type": "Building",
+        "geometry": [{
+          "type": "MultiSurface",
+          "boundaries": [[[0, 1, 2, 3]]],
+          "texture": {
+            "values": [
+              [
+                [0, 1, 2, 3]
+              ]
+            ]
+          }
+        }]
+      }
+    },
+    "appearance": {
+      "textures": [      {
+        "image": "znak-zabrane-parkiranja-i-zaustavljanja.png",
+        "type": "PNG"
+      }],
+      "vertices-texture": [
+        [0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]
+      ]
+    }
+  }
+  

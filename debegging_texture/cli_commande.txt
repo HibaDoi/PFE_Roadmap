@@ -1,0 +1,1 @@
+templates_cj --points C:/PFE_Roadmap/debegging_texture/debegging_texture.parquet --model C:/PFE_Roadmap/debegging_texture/Trafficggg.obj --save liege_C1_final.json --global_rotation 90 0 0 --global_scale 1 1 1
