@@ -16,7 +16,7 @@ Developed an **automated pipeline** for **detecting, classifying, and modeling c
 - **3D Data Formats:** CityJSON  
 - **Sensor Fusion:** LiDAR-Camera Fusion  
 
-## Your Role  
+## Key Contributions
 ✔ **Implemented YOLOv8** for object detection and classification.  
 ✔ **Developed an image-based positioning algorithm** using **Line of Bearing (LoB)**.  
 ✔ **Used KPConv** for point cloud segmentation and **Fast Global Registration (FGR)** for lamppost classification.  
